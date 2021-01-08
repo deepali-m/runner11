@@ -5,12 +5,13 @@ var upperGroundArr, upperGround2Arr, upperGround2;
 var gameState = "play";
 var sanPowerUp, frameArr;
 var upperArrRand;
+var san;
 var immunity= false;
 
 upperGroundArr = [200, 350, 760];
-frameArrNoMask = [46, 303, 904];
+frameArrNoMask = [96+30, 367+50, 0+40]; //blue
 upperGround2Arr = [300, 450, 863];
-frameArrSneezePerson = [96, 367, 0];
+frameArrSneezePerson = [96, 367, 0]; //red
 
 function preload()
 {
@@ -69,18 +70,17 @@ function draw()
             }
         }
 
-        frameArrRandNoMask = Math.round(random(0, 2));
-        frameArrRandSneezePerson = Math.round(0, 2);
-
+    
         runner.velocityY += 3;
 
         if(keyDown("F") && runner.y >= 550)
         {
             runner.velocityY = -43;
         }
-        if(keyDown("space") && runner.y >= 550)
+        if((keyDown("space") && runner.y >= 550) || (runner.collide(upperGroundGrp) && keyDown("space")))
         {
             runner.velocityY = -30;
+            console.log("jump");
         }
    
         if(ground.x<0)
@@ -90,13 +90,15 @@ function draw()
         createNoMaskPpl();
         createUpperGroud();
         createPersonSneeze();
+
         drawSprites();
     }
 }
 
 function createNoMaskPpl ()
 {
-    if(frameCount%frameArrNoMask[frameArrRandNoMask]===0)
+    frameArrRandNoMask = random(frameArrNoMask);
+    if(frameCount%frameArrRandNoMask===0)
     {
         noMaskPpl= createSprite(800, 560, 25, 25);
         noMaskPpl.collide(ground);
@@ -116,18 +118,25 @@ function createUpperGroud()
         upperGround = createSprite(800, 360, 400, 20);
         upperGround.velocityX = -3;
         upperGroundGrp.add(upperGround);
+        setTimeout(tallestGround, 2000);
 
     }
-    if(frameCount%upperArrRand+50===0)
+   /* if(frameCount%upperArrRand+50===0)
     {
         //HOW TO MAKE THE SECOND ONE WAIT FOR 30 FRAMES
-        upperGround2 = createSprite(800, 460, 400, 20);
-    }
+        
+    } */
 }
-
+function tallestGround()
+{
+    upperGround2 = createSprite(800, 220, 400, 20);
+    upperGround2.velocityX = -3;
+    upperGround2.shapeColor= "green";
+}
 function createPersonSneeze ()
 {
-    if(frameCount%frameArrSneezePerson[frameArrRandSneezePerson]===0)
+    frameArrRandSneezePerson = random(frameArrSneezePerson);
+    if(frameCount%frameArrRandSneezePerson===0)
     {
         personSneeze = createSprite(800, 560, 25, 25);
         personSneeze.collide(ground);
@@ -147,5 +156,17 @@ function createPersonSneeze ()
 function SanPowerUp()
 {
     immunity = true;
-    // how to add a time limit to this
+    san = createSprite(800, 215, 10, 10);
+    san.velocityX = -3;
+    if(runner.isTouching(san))
+    {
+        immunity = true;
+    }
 }
+
+
+/*  1. fix the tallest ground issue(doesnt jump once on upperground)
+    2. sliding feature
+    3. make animations
+    4.fix the numbers so that the enemies dont come up so often
+    */
